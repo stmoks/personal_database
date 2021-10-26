@@ -1,52 +1,79 @@
-from sqlite3.dbapi2 import connect
-from numpy import dtype
 import pandas as pd
+import pyodbc #seems important but haven't figured out where I'm going to use it yet
 import sqlite3
 import sqlalchemy
 
-# connecting to a databse
-# connection = sqlite3.connect('contacts.db')
-# crsr = connection.cursor()
+import database_connection
 
-# print('Connected to the database')
-# #close the connection
-
-# contacts_table = '''CREATE TABLE contacts (
-#     contact_id integer primary key,
-#     first_name varchar(250),
-#     last_name varchar(250),
-#     cell_number char(30)
-#     date_of_birth date,
-#     occupation char(200),
-#     education char(200),
-#     gender enum (male, female,other),
-#     location char(100),
-#     id_number char(30)
-# )'''
-
-# crsr.execute(contacts_table).fetchall()
-
-# all_contacts = 'select * from contacts;'
-
-# pd.read_sql_query(all_contacts,connection)
-
-# connection.close()
-
-
-contact_details = pd.read_excel('contact_details.xlsx',dtype={'Cell number':str},na_values='Missing')
-
-# print(contact_details.head())
-
-
-column_index = input('Which column would you like to search on? ').capitalize()
-contact_search = input('Which item would you like to find? ').capitalize()
+from sqlalchemy import create_engine
+from sqlite3.dbapi2 import connect
+from typing import final
+from numpy import dtype, e, insert
 
 
 
-if contact_details.loc[contact_details[column_index].isin([contact_search])].empty == False:
-    print(contact_details.loc[contact_details[column_index] == contact_search])
-else:
-    print(f'{column_index} does not exist')
+database_name = input('Enter the database name: ')
+
+if __name__ == '__main__':
+    db_object = database_connection.Database()
+    conn = db_object.create_connection(database_name)
+    crsr = conn.cursor()
+
+drop_table = 'drop table if exists contacts;'
+
+crsr.execute(drop_table)
+
+contacts_table = '''CREATE TABLE contacts (
+    contact_id integer primary key,
+    first_name varchar(250) not null,
+    last_name varchar(250) not null,
+    cell_number char(30) null,
+    email_address char(50) null,
+    date_of_birth date not null,
+    occupation char(200) null,
+    education char(200) null,
+    gender char check(gender in ('male', 'female','other')) not null,
+    location char(100) not null,
+    id_number char(30) null
+)'''
+
+crsr.execute(contacts_table).fetchall()
+
+
+contact_details = pd.read_excel('contact_details.xlsx',dtype={'cell_number':str},na_values='Missing',names=['first_name','last_name','cell_number','email_address','date_of_birth','occupation','education','gender','location','id_number'])
+
+print(contact_details.head())
 
 
 
+# column_index = input('Which column would you like to search on? ').capitalize()
+# contact_search = input('Which item would you like to find? ').capitalize()
+
+
+
+# if contact_details.loc[contact_details[column_index].isin([contact_search])].empty == False:
+#     print(contact_details.loc[contact_details[column_index] == contact_search])
+# else:
+#     print(f'{column_index} does not exist')
+
+
+cols = ','.join([str(i) for i in contact_details.columns.tolist()])
+
+insert_contacts = f'INSERT INTO contacts ({cols}) values(?,?,?,?,?,?,?,?,?,?)'
+
+for index, row in contact_details.iterrows():
+     crsr.execute(insert_contacts,tuple(row))
+
+conn.commit()
+
+
+
+all_contacts = 'select * from contacts;'
+
+print(crsr.execute(all_contacts).fetchone())
+
+pd.read_sql_query(all_contacts,conn)
+
+
+#close the connection
+conn.close()
