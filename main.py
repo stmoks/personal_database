@@ -10,6 +10,8 @@ from sqlite3.dbapi2 import connect
 from typing import final
 from numpy import dtype, e, insert
 
+from whatsapp_messages import Whatsapp_Chat
+
 
 
 database_name = input('Enter the database name: ')
@@ -65,6 +67,16 @@ for index, row in contact_details.iterrows():
      crsr.execute(insert_contacts,tuple(row))
 
 conn.commit()
+
+
+# connect database to the Whatsapp messages
+whatsapp_chat = Whatsapp_Chat(input('Enter the name: '))
+whatsapp_join = 'SELECT * FROM contacts a LEFT JOIN ... ON a.first_name = b.name'
+crsr.execute(whatsapp_join).fetchall()
+
+
+# perform nlp on the whatsapp text
+
 
 
 
