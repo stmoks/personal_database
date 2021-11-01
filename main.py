@@ -1,5 +1,5 @@
 import pandas as pd
-import pyodbc #seems important but haven't figured out where I'm going to use it yet
+import pyodbc #seems important but haven't figured out where I'm going to use it yet - odbc is a db api
 import sqlite3
 import sqlalchemy
 
