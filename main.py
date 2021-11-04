@@ -10,7 +10,8 @@ from sqlite3.dbapi2 import connect
 from typing import final
 from numpy import dtype, e, insert
 
-from whatsapp_messages import Whatsapp_Chat
+from whatsapp_messages import WhatsappChat
+from create_tables import CreateTable
 
 
 
@@ -21,27 +22,12 @@ if __name__ == '__main__':
     conn = db_object.create_connection(database_name)
     crsr = conn.cursor()
 
-drop_table = 'drop table if exists contacts;'
+table_definition = CreateTable()
+table_definition.create_table(conn)
 
-crsr.execute(drop_table)
+# table_definition.create_table(conn,[['customer_id','integer','primary_key','not null']])
 
-contacts_table = '''CREATE TABLE contacts (
-    contact_id integer primary key,
-    first_name varchar(250) not null,
-    last_name varchar(250) not null,
-    cell_number char(30) null,
-    email_address char(50) null,
-    date_of_birth date not null,
-    occupation char(200) null,
-    education char(200) null,
-    gender char check(gender in ('male', 'female','other')) not null,
-    location char(100) not null,
-    id_number char(30) null
-)'''
-
-crsr.execute(contacts_table).fetchall()
-
-
+#todo do i need to index one of the columns below? Indexes make searching faster
 contact_details = pd.read_excel('contact_details.xlsx',dtype={'cell_number':str},na_values='Missing',names=['first_name','last_name','cell_number','email_address','date_of_birth','occupation','education','gender','location','id_number'])
 
 print(contact_details.head())
@@ -50,6 +36,7 @@ print(contact_details.head())
 
 # column_index = input('Which column would you like to search on? ').capitalize()
 # contact_search = input('Which item would you like to find? ').capitalize()
+contact_search = 'Lungelo'
 
 
 
@@ -58,6 +45,32 @@ print(contact_details.head())
 # else:
 #     print(f'{column_index} does not exist')
 
+
+#todo turn this into a function somehow
+cols_contacts = ','.join([str(i) for i in contact_details.columns.tolist()])
+
+insert_contacts = f'INSERT INTO contacts ({cols_contacts}) values(?,?,?,?,?,?,?,?,?,?)'
+
+for index, row in contact_details.iterrows():
+     crsr.execute(insert_contacts,tuple(row))
+
+conn.commit()
+
+
+# connect database to the Whatsapp messages
+whatsapp_chat = WhatsappChat(input('Enter the name: '))
+whatsapp_df = WhatsappChat(contact_search)
+
+
+print(whatsapp_df)
+cols = list(whatsapp_df.columns.values)
+
+insert_chats = f'INSERT INTO whatsapp_chats ({cols}) values(?,?,?,?,?)'
+
+for index, row in whatsapp_df.iterrows():
+     crsr.execute(insert_chats,tuple(row))
+
+conn.commit()
 
 cols = ','.join([str(i) for i in contact_details.columns.tolist()])
 
@@ -68,23 +81,16 @@ for index, row in contact_details.iterrows():
 
 conn.commit()
 
-
-# connect database to the Whatsapp messages
-whatsapp_chat = Whatsapp_Chat(input('Enter the name: '))
-whatsapp_join = 'SELECT * FROM contacts a LEFT JOIN ... ON a.first_name = b.name'
-crsr.execute(whatsapp_join).fetchall()
+# whatsapp_join = f'SELECT * FROM contacts a LEFT JOIN ... ON a.first_name = b.name'
+# crsr.execute(whatsapp_join).fetchall()
 
 
-# perform nlp on the whatsapp text
-
-
+#todo perform nlp on the whatsapp text
 
 
 all_contacts = 'select * from contacts;'
 
-print(crsr.execute(all_contacts).fetchone())
-
-pd.read_sql_query(all_contacts,conn)
+print(pd.read_sql_query(all_contacts,conn))
 
 
 #close the connection
