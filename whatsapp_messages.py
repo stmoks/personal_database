@@ -43,6 +43,10 @@ class WhatsappChat:
                 print('Error transforming the whatsapp chat')
     
         
-
-
 __doc__ = '''The module helps with basic whatsapp chat transformations. A text file containing the conversation is uploaded, manipulated using regex, and then converted to a Pandas dataframe that sets out the authors, messages, time, date, and day of the week.'''
+
+
+
+# connect database to the Whatsapp messages
+whatsapp_chat = WhatsappChat(input('Enter the name: '))
+whatsapp_df = WhatsappChat(contact_search)

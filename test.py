@@ -23,9 +23,24 @@ for line in text_messages:
         columns = {'date':[date],'day':[day],'time':[time],'author':[author],'message':[message]}
         whatsapp_df = pd.DataFrame(data=columns)
         whatsapp_df.set_index('date',inplace=True)
-        print(whatsapp_df)
+        print(type(whatsapp_df))
     except:
         print('Error transforming the whatsapp chat')
+
+
+# import pandas as pd
+# import pyodbc #seems important but haven't figured out where I'm going to use it yet - odbc is a db api
+# import sqlite3
+# import sqlalchemy
+
+
+# from sqlalchemy import create_engine
+# from sqlite3.dbapi2 import connect
+# from typing import final
+# from numpy import dtype, e, insert
+
+# from whatsapp_messages import WhatsappChat
+# from create_tables import CreateTable
 
 
 
