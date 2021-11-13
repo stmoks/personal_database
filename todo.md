@@ -8,3 +8,5 @@
 
 * who said what game - snippets from the whatsapp chats and you can guess who said what
 * automatic web search, aggregation, and visualisattion of the things topical between you and a friend
+
+# get sense of friend's mood from whatsapp chats using nlp and link that with a list of songs from Spotify (need to figure out way to get details about songs that can be linked to sentiment). but build up better profile to give more general recommendations

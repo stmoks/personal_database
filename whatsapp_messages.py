@@ -20,6 +20,7 @@ class WhatsappChat:
         self.name = name
         self.load_chats(self.name)
 
+#todo need to split out the load and the transform - not SOLID?
     def load_chats(self, name):
         with open(f'{name}.txt',encoding='utf8') as file:
             text_messages = file.readlines()[1:]
@@ -33,7 +34,7 @@ class WhatsappChat:
                 date = datetime.strptime(date,'%Y/%m/%d')
                 day = datetime.strftime(date,'%A')
                 time = re.search(r'\d{2}:\d{2}',line).group()
-                author = re.search(r'- .*?:',line).group()[2:-1] #todo worked but don't know why we put the qualifier before and not after
+                author = re.search(r'- .*?:',line).group()[2:-1] # worked but don't know why we put the qualifier before and not after
                 message = re.search(r':\s.*',line).group()[2:]
                 columns = {'date':[date],'day':[day],'time':[time],'author':[author],'message':[message]}
                 whatsapp_df = pd.DataFrame(data=columns)
