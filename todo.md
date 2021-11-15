@@ -5,6 +5,7 @@
 - log table for ETL jobs (check out dbt)
 - use Faker library + bamboolib (pandas UI)
 - create branch + practise pull requests + issues
+- what can we learn from Git about maintaning database integrity using hashes?
 
 * who said what game - snippets from the whatsapp chats and you can guess who said what
 * automatic web search, aggregation, and visualisattion of the things topical between you and a friend
